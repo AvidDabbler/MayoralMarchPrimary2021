@@ -14,8 +14,8 @@ code {
 
 #buttons{
   position: absolute;
-  bottom: 30px;
+  bottom: 260px;
   display: flex;
   flex-direction: column;
-  right: 18%;
+  right: 30px;
 }
