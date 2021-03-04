@@ -11,3 +11,11 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+#buttons{
+  position: absolute;
+  bottom: 30px;
+  display: flex;
+  flex-direction: column;
+  right: 18%;
+}

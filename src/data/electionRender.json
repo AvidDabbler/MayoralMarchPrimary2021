@@ -1,0 +1,22 @@
+{
+    "type": "dot-density",  
+    "dotValue": 10,
+    "referenceScale": 1000000,
+    "attributes": [{
+      "field": "Tishaura_Jones",
+      "label": "Tishaura Jones",
+      "color": "green"
+    }, {
+      "field": "Cara_Spencer",
+      "label": "Cara Spencer",
+      "color": "blue"
+    }, {
+      "field": "Lewis_Reed",
+      "label": "Lewis Reed",
+      "color": "orange"
+    }, {
+      "field": "Andrew_Jones",
+      "label": "Andrew Jones",
+      "color": "purple"
+    }]
+  }

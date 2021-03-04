@@ -1,40 +1,108 @@
 import React, {useEffect, useRef} from 'react'
 import { loadModules } from "esri-loader";
+import wardsData from './data/ElectionResults202103.json'
+import electionRender from './data/electionRender.json'
 
 export default function Map() {
     const mapEl = useRef(null)
+    
+    const loadMap = () =>loadModules([
+        "esri/config",
+        "esri/Map",
+        "esri/views/MapView",
+        "esri/layers/GeoJSONLayer",
+        "esri/widgets/Locate",
+        "esri/widgets/Track",
+        "esri/Graphic",
+        "esri/widgets/Legend"
+    ], {css: true})
+    .then(function ([esriConfig, Map, MapView, GeoJSONLayer, Locate, Track, Graphic, Legend]){
+                esriConfig.apiKey = process.env.REACT_APP_API_KEY
+        
+                const wardsBlob = new Blob([JSON.stringify(wardsData)], {type: "application/json"});
+                const url = URL.createObjectURL(wardsBlob);
 
-        const loadMap = () =>loadModules([
-            "esri/config",
-            "esri/Map",
-            "esri/views/MapView",
-            "esri/layers/GeoJSONLayer",
-            "esri/widgets/Locate",
-            "esri/widgets/Track",
-            "esri/Graphic"
-        ], {css: true})
-            .then(function ([esriConfig, Map, MapView, GeoJSONLayer, Locate, Track, Graphic]){
-                esriConfig.apiKey = 'AAPKaeaf4e70e4fd4906b1257137a854cc97eVbz1ae-QH51T37UQW1XvlnO64OTwPnR9J4tnfA6uDtrLwzani_HfpOETtNobPp_'
-                
-                const routes = new GeoJSONLayer({
-                        url: 'https://opendata.arcgis.com/datasets/80d7b4b8e93f43929ed345d7c72ec4c5_0.geojson',
-                    popupTemplate: {
-                        title: "Routes",
-                        content: "<b>Route: </b>{RouteAbbr}"
-                        }
-                })      
+                const wardResults = new GeoJSONLayer({
+                        url: url,
+                        popupTemplate: {
+                            title: "Ward {Ward} Election Results",
+                            content: [
+                                {
+                                    type: "fields",
+                                    fieldInfos: [
+                                        {
+                                            fieldName: "Tishaura_Jones",
+                                            visible: true,
+                                            label: "Tishaura Jones",
+                                            format: {
+                                              places: 0,
+                                              digitSeparator: true
+                                        }},
+                                        {
+                                            fieldName: "Cara_Spencer",
+                                            visible: true,
+                                            label: "Cara Spencer",
+                                            format: {
+                                              places: 0,
+                                              digitSeparator: true
+                                        }},
+                                        {
+                                            fieldName: "Lewis_Reed",
+                                            visible: true,
+                                            label: "Lewis Reed",
+                                            format: {
+                                              places: 0,
+                                              digitSeparator: true
+                                        }},
+                                        {
+                                            fieldName: "Andrew_Jones",
+                                            visible: true,
+                                            label: "Andrew Jones",
+                                            format: {
+                                              places: 0,
+                                              digitSeparator: true
+                                        }},
+                                    ]
+                                },
+                                {
+                                type: "media",
+                                mediaInfos: [{
+                                    type: "pie-chart",
+                                    title: "Votes by Ward",
+                                    value: {
+                                        fields:[
+                                            "Tishaura_Jones",
+                                            "Cara_Spencer",
+                                            "Lewis_Reed",
+                                            "Andrew_Jones"
+                                        ]
+                                    }
+                                }]
+                                }]
+                            }
+                })
+
+                wardResults.renderer = electionRender
 
                 const map = new Map({
-                        basemap: "arcgis-navigation", // Basemap layer service
-                        layers: [routes]
+                        basemap: "arcgis-dark-gray", // Basemap layer service
+                        layers: [wardResults]
                     });
 
 
                 const view = new MapView({
                     container: mapEl.current,
                     map: map,
-                    center: [-90.199402, 38.627003],
-                    zoom: 13
+                    center: [-90.20, 38.65],
+                    zoom: 11,
+                    popup:{
+                        dockEnabled: true,
+                        dockOptions:{
+                            breakpoint: false,
+                            buttonEnabled: false,
+                            position:'bottom-left'
+                        }
+                    }
                 });
                 
                 const locate = new Locate({
@@ -61,8 +129,17 @@ export default function Map() {
                     useHeadingEnabled: false
                   });
 
-                view.ui.add(track, "top-left");
+                var legend = new Legend({
+                    view: view,
+                    layerInfos: [{
+                        layer: wardResults,
+                        title: "Legend"
+                    }]
+                });
+
+                view.ui.add(legend, "bottom-right");
                 view.ui.add(locate, "top-left"); 
+
                     
             })
     
